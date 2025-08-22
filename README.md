@@ -27,7 +27,7 @@ The cluster has two stacks, one for adminstration and one application stack for 
 
 > ⚠️ The **MASTER_NODE_IP** is the ip of one of the master nodes, or the leader ip address, this IP will be the entry point for all nodes not matter where are they deployed.
 
-This service could be accessed by *http://**MASTER_NODE_IP**:9000*, credentials on Aug 22 was admin/Asdf1234 but this could be change by [re-deploying](#deploy-and-update-an-stack) the stack.
+This service could be accessed by *http://**MASTER_NODE_IP**:9000*, credentials on Aug 22 was admin/Asdfghjkl123456789* but this could be change by [re-deploying](#deploy-and-update-an-stack) the stack.
 
 ![Portainer](img/portainer.png)
 ![Portainer cluster](img/portainer_cluster.png)
@@ -74,12 +74,89 @@ This is the last load test demo on the cluster.
 * You could connect them to a **linux** laptop by cable, then connect by ssh, same credentials to all phones.
     * user: cloudlet
     * password: 1234
+    * The ip address will be the same for all the phones
 
 ``` bash
-$ ssh cloudlet@
+$ ssh cloudlet@172.16.42.1
+```
+* If you have access to then trhought network, then the connection is the same but with the Ip address.
+     * user: cloudlet
+    * password: 1234
+``` bash
+$ ssh cloudlet@IP_ADDRESS
 ```
 
+
 ## Set up a cluster
+
+### Networking
+If you have the networking aready set up (you could use ut-public) then you could go to the next section [Docker swarm](#docker-swarm) But I highly suggest to set up your own networking as you could set static DHPC, thus make all more easy later on.
+
+For setting up the networking, it depends mainly on what router are you using, in my case I suggest working with the [Mango](https://www.gl-inet.com/products/gl-mt300n-v2/) router, it is cheap, small and works pretty good for this job. You maybe could find one asking to Ulrich Norbisrath.
+
+As I have no idea which router you can use I can not expaling how to configure it. But, if you select the Mango, in 5 mins you could have all up and running with the help of Ulrich.
+
+Once you have a netowking set up with SSID and password, then you could run the [setting_network.sh](scripts/setting_network.sh) script on every node
+
+
+``` bash
+
+$ sudo nmcli radio wifi on # Turn on wifi
+$ sudo nmcli device wifi connect cloudlet password my-secure-password # connect to SSID cloudlet, pass my-secure-password
+$ sudo nmcli connection modify cloudlet connection.autoconnect-priority 100 # Set this as the prefered WIFI
+$ sudo nmcli connection delete "ut-public" # Forget about this one, just to avoid the node jumping from net to net
+
+```
+
+### Docker swarm
+
+> ☣️ All phones have already docker installed, but this deamon does not start on bootstrap, thus every time the phones shutdown and turn on you should activate the docker deamon service
+
+``` bash
+$ sudo service docker start
+```
+
+Once docker is up, the next task is to create the cluster, for this you should run the next code only once in whatever phone
+
+``` bash
+$ docker swarm init --advertise-addr NODE_IP_ADDRESS
+```
+
+This will set up a new swarm cluster, then you could start adding nodes, you should select one of the next codes to get a token, it could be a master or a compute token node, usually a cluster should have in a good case 1, 3, 4 master nodes.
+
+
+Get a worker/compute node token link
+``` bash
+$ docker swarm join-token worker
+```
+
+
+Get a master/manager node token link
+``` bash
+$ docker swarm join-token manager
+```
+
+Once you got your token, you should go to each other phone, make sure docker is running and then paste the token on each one of them, as an example:
+
+> Example of joining other node into the cluster.
+``` bash
+$ sudo service docker restart
+$ sudo docker swarm join --token SWMTKN-1-2bwi7gaoklegao52ce5ioiptbcdq70qleg8h8dswr9n29ah5a3-b8wlv3ut33gnwt5fnbbi0i8cb 192.168.1.246:2377
+```
+
+## Clean docker swarm
+
+[remove_cluster.sh](scripts/setting_network.sh) script contains all the steps to remove a node from the cluster and to clean the space. You should run this script on every node, so first connect to each node and then run it.
+
+On each node / phone you should:
+
+``` bash
+$ ssh cloudlet@IP_ADDRESS # Connect to the node
+$ sudo service docker restart # make sure docker deamon is runnig
+$ sudo docker swarm leave --force # Leave the cluster
+$ sudo docker stop $(sudo docker ps -a -q) # Remove all active containers
+$ sudo docker system prune -f # Clean old images, networking and volumes
+```
 
 
 ## Deploy and update an stack

@@ -66,7 +66,21 @@ This is the last load test demo on the cluster.
 
 # Hows to
 
+## Connect to a phone
+
+> ⚠️ All four phones has the same password **1234**
+
+* You could use the screem, password **1234**
+* You could connect them to a **linux** laptop by cable, then connect by ssh, same credentials to all phones.
+    * user: cloudlet
+    * password: 1234
+
+``` bash
+$ ssh cloudlet@
+```
+
 ## Set up a cluster
+
 
 ## Deploy and update an stack
 

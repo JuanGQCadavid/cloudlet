@@ -8,6 +8,8 @@ Each mobile phone has PostmaketOS as linux kernel.
 
 Each mobile phone has one role in the docker swarm cluster, it could be ether Master (M) or Compute (C) node. Both of them (M, C) can and will host docker containers, the only difference is that only masters can deploy, update, or delete a stack in the cluster. When a cluster has more than one Master, then election process happens to select only one leader for the whole cluster, the remaining M nodes will be as candidates, as soon as the leader is not reacheble, the Master nodes will create a new term.
 
+![Master compute](img/master-node.png)
+
 > :warning: When the cluster has two active master, the leader election does not work.
 
 ![Overview](img/overview.png)
@@ -27,9 +29,40 @@ The cluster has two stacks, one for adminstration and one application stack for 
 
 This service could be accessed by *http://**MASTER_NODE_IP**:9000*, credentials on Aug 22 was admin/Asdf1234 but this could be change by [re-deploying](#deploy-and-update-an-stack) the stack.
 
+![Portainer](img/portainer.png)
+![Portainer cluster](img/portainer_cluster.png)
+
 ## Go coffe app - Demo application
 
+> ☢️ The stack has a reverse proxy, this one is accesible by using an IP address, if you deploy this stack you should update the param services.web.environment.**REVERSE_PROXY_URL** with the master node Ip address.
 
+[go_coffe.yml](stacks/go_coffe.yml) is a demo app in golang that helps to show that the cluster is able to support a whole application with backend, frontend, database and event streaming sources. Go coffe is compose of:
+
+* postgres:14 
+* rabbitmq:3.11
+* Six golang applications under juangonzalout dockerhub account.
+
+All previous images are ARMx32, which makes them suitable for working on the cluster.
+
+![Go coffe](img/go-coffe.png)
+
+### Volume test on Go coffe app
+
+This project also contains a volumen test located on [locustfile.py](load_test/locustfile.py). In order to run the test, [locust](https://docs.locust.io/en/stable/installation.html) should be installed in the host machine.
+
+Once Locus is installed you should:
+
+``` sh
+$ cd load_test
+$ locust
+```
+
+Then type the ip address of the master node and [start the test](https://docs.locust.io/en/stable/quickstart.html).
+
+
+This is the last load test demo on the cluster.
+
+![loadtest](img/loadtest.png)
 
 # Hows to
 

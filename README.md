@@ -161,6 +161,27 @@ $ sudo docker system prune -f # Clean old images, networking and volumes
 
 ## Deploy and update an stack
 
+To deploy or update an stack is the command is the same.
+
+On docker swarm we could deploy docker compose files using the next command:
+
+``` bash
+$ sudo docker stack deploy -c PATH_TO_DOCKER_COMPOSE.yml STACK_NAME
+```
+
+As an example, you could deploy the whole demo stack by running:
+
+``` bash
+$ cd stacks
+$ sudo docker stack deploy --compose-file go_coffe.yml coffe
+```
+
+The same with portainer
+
+``` bash
+$ cd stacks
+$ sudo docker stack deploy --compose-file portainer_agent.yml portainer
+```
 ## Destroy an stack
 
 ## Useful commands

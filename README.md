@@ -184,7 +184,62 @@ $ sudo docker stack deploy --compose-file portainer_agent.yml portainer
 ```
 ## Destroy an stack
 
+To destroy an stack you should be aware of the stack name, then run 
+
+``` bash
+$ sudo docker stack rm STACK_NAME
+```
+
 ## Useful commands
+
+### WiFI
+``` bash
+$ nmcli device wifi list # Shows all the wifi networks
+$ nmcli -f autoconnect-priority,name c # List connectios
+```
+
+### Containers
+``` bash
+$ sudo docker service ls # Shows all services
+$ sudo docker service ps ID # Get information about a service
+$ sudo docker service scale ID=# # Scale Id to # number
+```
+
+### Nodes information
+``` bash
+$ sudo docker node ls # List all the nodes on the cluster
+```
+
+# Actual passoword - Coud be potentially deprecated
+
+## Wifi
+http://192.168.1.1/cgi-bin/luci/
+```
+SSID: cloudlet
+password: my-secure-password
+```
+
+## Portainer
+```
+user: cloudlet
+pass: Asdfghjkl123456789*
+```
+
+## Every phone users
+```
+mungaX where x belongs to [2,3,4] or empty
+1234
+```
+
+```
+cloudlet
+1234
+```
+
+```
+By using screen
+1234
+```
 
 
 
